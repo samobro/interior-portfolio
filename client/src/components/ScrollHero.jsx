@@ -1,12 +1,13 @@
 import { startTransition, useEffect, useRef, useState } from "react";
 
-const TOTAL_FRAMES = 70;
+const TOTAL_FRAMES = 30;
 const CRITICAL_FRAMES = 10;
 const BATCH_SIZE = 10;
 const BATCH_DELAY_MS = 100;
 
 const FRAME_PATHS = Array.from({ length: TOTAL_FRAMES }, (_, index) => {
-  const frameNumber = String(index + 1).padStart(3, "0");
+  // Select odd-numbered frames: 001, 003, 005 … 059 (30 frames total)
+  const frameNumber = String(index * 2 + 1).padStart(3, "0");
   return `${import.meta.env.BASE_URL}frames/ezgif-frame-${frameNumber}.webp`;
 });
 
@@ -129,7 +130,7 @@ export default function ScrollHero() {
   const overlayOpacity = 0.38 * textOpacity + 0.1;
 
   return (
-    <section className="relative h-[500vh] w-full bg-luxuryBg">
+    <section className="relative h-[300vh] sm:h-[500vh] w-full bg-luxuryBg">
       <div className="sticky top-0 h-screen w-screen overflow-hidden">
         <div className="absolute inset-0 bg-[#ddd2c3]" />
 
@@ -140,7 +141,7 @@ export default function ScrollHero() {
         <img
           src={FRAME_PATHS[displayFrame]}
           alt="Luxury interior cinematic sequence"
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
+          className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-300 ${
             heroReady ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -157,7 +158,7 @@ export default function ScrollHero() {
           }}
         >
           <div
-            className="rounded-[2rem] px-8 py-8 text-center backdrop-blur-[3px] sm:px-12 sm:py-10"
+            className="rounded-[2rem] px-4 py-6 text-center backdrop-blur-[3px] sm:px-8 sm:py-10"
             style={{
               background: `rgba(34, 28, 22, ${overlayOpacity})`,
               boxShadow: "0 24px 70px rgba(0, 0, 0, 0.16)",
@@ -166,7 +167,7 @@ export default function ScrollHero() {
             <p className="mb-4 text-[0.72rem] font-medium uppercase tracking-[0.34em] text-white/82 sm:mb-5">
               Interior Design
             </p>
-            <h1 className="font-display text-5xl leading-[0.95] text-white sm:text-6xl md:text-7xl lg:text-8xl">
+            <h1 className="font-display text-3xl leading-[0.95] text-white sm:text-5xl lg:text-8xl">
               <span className="block">Designing calm</span>
               <span className="block">light-filled homes</span>
             </h1>
