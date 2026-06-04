@@ -6,8 +6,6 @@ export default function ScrollHero() {
   const [heroReady, setHeroReady] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const videoRef = useRef(null);
-  const targetTimeRef = useRef(0);
-  const rafIdRef = useRef(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -17,28 +15,19 @@ export default function ScrollHero() {
       video.addEventListener("canplay", handleCanPlay, { once: true });
     }
 
-    const animateScrub = () => {
-      const video = videoRef.current;
-      if (video && video.readyState >= 2) {
-        const diff = targetTimeRef.current - video.currentTime;
-        if (Math.abs(diff) > 0.001) {
-          video.currentTime += diff * 0.08;
-        }
-      }
-      rafIdRef.current = requestAnimationFrame(animateScrub);
-    };
-
     const updateFromScroll = () => {
       const sectionScrollable = Math.max(window.innerHeight * 4, 1);
       const pageScroll = window.scrollY;
       const progress = clamp(pageScroll / sectionScrollable);
 
       setScrollProgress(progress);
-      targetTimeRef.current = progress * (videoRef.current?.duration || 0);
+
+      if (videoRef.current && videoRef.current.readyState >= 2) {
+        videoRef.current.currentTime = progress * videoRef.current.duration;
+      }
     };
 
     updateFromScroll();
-    rafIdRef.current = requestAnimationFrame(animateScrub);
 
     let ticking = false;
     const handleScroll = () => {
@@ -58,7 +47,6 @@ export default function ScrollHero() {
       if (video) {
         video.removeEventListener("canplay", handleCanPlay);
       }
-      cancelAnimationFrame(rafIdRef.current);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
     };
@@ -80,7 +68,7 @@ export default function ScrollHero() {
 
         <video
           ref={videoRef}
-          src="/interior-portfolio/frames/hero.mp4"
+          src={`${import.meta.env.BASE_URL}frames/hero.mp4`}
           muted
           playsInline
           preload="auto"
@@ -111,10 +99,10 @@ export default function ScrollHero() {
               Interior Design
             </p>
             <img
-              src="/interior-portfolio/logo.png"
-              alt="A.Interiors logo"
-              className="w-48 object-contain drop-shadow-lg sm:w-64 lg:w-80"
-            />
+  src={`${import.meta.env.BASE_URL}logo.png`}
+  alt="A.Interiors logo"
+  className="w-48 object-contain drop-shadow-lg sm:w-64 lg:w-80"
+/>
           </div>
         </div>
       </div>
