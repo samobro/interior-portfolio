@@ -110,10 +110,11 @@ export default function ScrollHero() {
             <p className="mb-4 text-[0.72rem] font-medium uppercase tracking-[0.34em] text-white/82 sm:mb-5">
               Interior Design
             </p>
-            <h1 className="font-display text-3xl leading-[0.95] text-white sm:text-5xl lg:text-8xl">
-              <span className="block">Designing calm</span>
-              <span className="block">light-filled homes</span>
-            </h1>
+            <img
+              src="/logo.png"
+              alt="A.Interiors logo"
+              className="w-48 object-contain drop-shadow-lg sm:w-64 lg:w-80"
+            />
           </div>
         </div>
       </div>
