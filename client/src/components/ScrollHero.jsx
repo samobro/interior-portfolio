@@ -68,7 +68,7 @@ export default function ScrollHero() {
 
         <video
           ref={videoRef}
-          src="/videos/hero.mp4"
+          src="/frames/hero.mp4"
           muted
           playsInline
           preload="auto"
