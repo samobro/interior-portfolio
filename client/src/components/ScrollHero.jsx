@@ -80,7 +80,7 @@ export default function ScrollHero() {
 
         <video
           ref={videoRef}
-          src="/frames/hero.mp4"
+          src="/interior-portfolio/frames/hero.mp4"
           muted
           playsInline
           preload="auto"
@@ -111,7 +111,7 @@ export default function ScrollHero() {
               Interior Design
             </p>
             <img
-              src="/logo.png"
+              src="/interior-portfolio/logo.png"
               alt="A.Interiors logo"
               className="w-48 object-contain drop-shadow-lg sm:w-64 lg:w-80"
             />
