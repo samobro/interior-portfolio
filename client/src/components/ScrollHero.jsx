@@ -28,6 +28,7 @@ export default function ScrollHero() {
     };
 
     updateFromScroll();
+    animationFrameId = window.requestAnimationFrame(animateFrame);
 
     let ticking = false;
     const handleScroll = () => {

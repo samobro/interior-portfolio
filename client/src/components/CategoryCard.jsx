@@ -2,6 +2,11 @@
 import { Link } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 
+const optimizeImageUrl = (url) => {
+  if (!url || !url.includes("cloudinary.com")) return url;
+  return url.includes("?") ? url : `${url}?w=800&q=auto&f=auto`;
+};
+
 const CategoryCard = ({ item }) => {
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -11,7 +16,8 @@ const CategoryCard = ({ item }) => {
   // helper: handle both relative and full URLs
   const toUrl = (p) => {
     if (!p) return null;
-    return p.startsWith("http") ? p : `https://interior-portfolio-production.up.railway.app${p}`;
+    const resolved = p.startsWith("http") ? p : `https://interior-portfolio-production.up.railway.app${p}`;
+    return optimizeImageUrl(resolved);
   };
 
   return (
@@ -24,16 +30,15 @@ const CategoryCard = ({ item }) => {
     >
       <div className="relative">
         <div
-          className="aspect-[16/11] bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+          className="aspect-[4/3] bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
           style={{
             backgroundImage: `url(${item.cover_image ? toUrl(item.cover_image) : "/placeholder.jpg"})`,
           }}
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_38%,rgba(47,36,28,0.14)_100%)]" />
       </div>
-      <div className="absolute inset-x-4 bottom-4 rounded-[1.35rem] border border-white/70 bg-white/82 p-4 backdrop-blur-md">
-        <p className="text-[0.68rem] uppercase tracking-[0.28em] text-luxuryMuted">Category</p>
-        <h3 className="mt-2 font-display text-2xl text-luxuryInk transition-colors duration-300 group-hover:text-[#8b7158]">
+      <div className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white/80 px-4 py-2 backdrop-blur-sm">
+        <p className="text-[0.6rem] uppercase tracking-widest text-luxuryMuted">Category</p>
+        <h3 className="mt-1 font-display text-lg text-luxuryInk transition-colors duration-300 group-hover:text-[#8b7158]">
           {item.name}
         </h3>
       </div>

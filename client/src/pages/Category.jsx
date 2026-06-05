@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 
+const optimizeImageUrl = (url) => {
+  if (!url || !url.includes("cloudinary.com")) return url;
+  return url.includes("?") ? url : `${url}?w=800&q=auto&f=auto`;
+};
+
 // Project card component with animations
 function ProjectCard({ project }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2 });
@@ -21,9 +26,10 @@ function ProjectCard({ project }) {
           {project.images?.[0] && (
             <div className="relative overflow-hidden rounded-t-2xl">
               <img
-                src={project.images[0].path}
+                src={optimizeImageUrl(project.images[0].path)}
                 alt={project.title}
                 className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+              loading="lazy"
               />
               {/* Image overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
