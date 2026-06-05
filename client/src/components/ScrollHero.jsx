@@ -88,22 +88,11 @@ export default function ScrollHero() {
             pointerEvents: textOpacity < 0.05 ? "none" : "auto",
           }}
         >
-          <div
-            className="rounded-[2rem] px-4 py-6 text-center backdrop-blur-[3px] sm:px-8 sm:py-10"
-            style={{
-              background: `rgba(34, 28, 22, ${overlayOpacity})`,
-              boxShadow: "0 24px 70px rgba(0, 0, 0, 0.16)",
-            }}
-          >
-            <p className="mb-4 text-[0.72rem] font-medium uppercase tracking-[0.34em] text-white/82 sm:mb-5">
-              Interior Design
-            </p>
             <img
-  src={`${import.meta.env.BASE_URL}logo.png`}
-  alt="A.Interiors logo"
-  className="w-48 object-contain drop-shadow-lg sm:w-64 lg:w-80"
-/>
-          </div>
+              src={`${import.meta.env.BASE_URL}logo.png`}
+              alt="A.Interiors logo"
+              className="w-64 object-contain drop-shadow-xl sm:w-80 lg:w-96"
+            />
         </div>
       </div>
     </section>
