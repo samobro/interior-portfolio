@@ -265,11 +265,7 @@ export default function ProjectDetail() {
             <img
               src={optimizeImageUrl(project.images[currentImageIndex].path)}
               alt={`${project.title}-${currentImageIndex + 1}`}
- codex/fix-frontend-issues-for-scrollhero-and-cards-ds44ow
-              className="h-screen w-screen object-contain"
-
               className="max-w-full max-h-full object-contain"
-main
               onClick={(e) => e.stopPropagation()}
             />
           </div>
