@@ -2,12 +2,28 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ScrollHero from "../components/ScrollHero.jsx";
 import CategoryCard from "../components/CategoryCard.jsx";
-import { fetchCategories } from "../utils/api.js";
+import { FALLBACK_CATEGORIES, fetchCategories } from "../utils/api.js";
+
+const CATEGORY_SKELETONS = Array.from({ length: 3 }, (_, index) => index);
+
+function CategoryCardSkeleton() {
+  return (
+    <div
+      className="relative min-w-[280px] flex-shrink-0 overflow-hidden rounded-[1.75rem] border border-luxuryLine bg-white/70 shadow-[0_18px_60px_rgba(121,99,77,0.08)] sm:min-w-[340px] lg:min-w-[380px]"
+      aria-hidden="true"
+    >
+      <div className="aspect-[4/3] animate-pulse bg-[linear-gradient(110deg,_rgba(232,221,208,0.7)_8%,_rgba(255,255,255,0.9)_18%,_rgba(232,221,208,0.72)_33%)] bg-[length:200%_100%]" />
+      <div className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white/82 px-4 py-3 backdrop-blur-sm">
+        <div className="h-2 w-16 animate-pulse rounded-full bg-luxuryLine/80" />
+        <div className="mt-3 h-5 w-32 animate-pulse rounded-full bg-luxuryLine/70" />
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState(null);
   const [aboutImageLoaded, setAboutImageLoaded] = useState(false);
   const location = useLocation();
   const categoriesScrollRef = useRef(null);
@@ -61,7 +77,8 @@ export default function Home() {
         const data = await fetchCategories();
         setCategories(data);
       } catch (e) {
-        setErr(e.message || "Failed to load categories");
+        console.warn("Categories API unavailable; showing fallback category cards.", e);
+        setCategories(FALLBACK_CATEGORIES);
       } finally {
         setLoading(false);
       }
@@ -109,23 +126,6 @@ export default function Home() {
             </div>
           </div>
 
-          {loading && (
-            <div className="flex justify-center py-14">
-              <div className="relative h-14 w-14">
-                <div className="absolute inset-0 rounded-full border border-luxuryLine" />
-                <div className="absolute inset-0 animate-spin rounded-full border-2 border-[#b89b7d] border-t-transparent" />
-              </div>
-            </div>
-          )}
-
-          {err && (
-            <div className="py-8 text-center">
-              <p className="inline-block rounded-full border border-[#d6b7a7] bg-white/80 px-5 py-3 text-sm text-[#9a5a42]">
-                {err}
-              </p>
-            </div>
-          )}
-
           <div className="relative">
             <button
               type="button"
@@ -147,6 +147,7 @@ export default function Home() {
             <div
               ref={categoriesScrollRef}
               className="scrollbar-hide flex gap-6 overflow-x-auto px-1 py-10 touch-pan-x"
+              aria-busy={loading}
               style={{
                 overflowY: "hidden",
                 WebkitOverflowScrolling: "touch",
@@ -168,9 +169,9 @@ export default function Home() {
                 }
               }}
             >
-              {categories.map((category) => (
-                <CategoryCard key={category.id} item={category} />
-              ))}
+              {loading
+                ? CATEGORY_SKELETONS.map((item) => <CategoryCardSkeleton key={item} />)
+                : categories.map((category) => <CategoryCard key={category.id} item={category} />)}
             </div>
           </div>
         </div>
@@ -193,7 +194,7 @@ export default function Home() {
                 )}
 
                 <img
-                  src={`${import.meta.env.BASE_URL}hero-bg.png`}
+                  src={`${import.meta.env.BASE_URL}about-me.jpg`}
                   alt="Interior designer portrait"
                   className={`mx-auto h-full min-h-[360px] w-full rounded-[1.5rem] object-cover transition-opacity duration-700 ${
                     aboutImageLoaded ? "opacity-100" : "opacity-0"
@@ -249,7 +250,7 @@ export default function Home() {
                   Start a Conversation
                 </a>
                 <a
-                  href="/cv.pdf"
+                  href={`${import.meta.env.BASE_URL}cv.pdf`}
                   download
                   className="inline-flex items-center justify-center rounded-full border border-luxuryLine bg-white/70 px-7 py-3 text-sm font-semibold uppercase tracking-[0.24em] text-luxuryInk transition-colors duration-300 hover:bg-white"
                 >

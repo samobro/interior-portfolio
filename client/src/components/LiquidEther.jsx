@@ -975,8 +975,8 @@ export default function LiquidEther({
             if (canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
             Common.renderer.dispose();
           }
-        } catch (e) {
-          void 0;
+        } catch {
+          // Ignore cleanup errors while disposing WebGL resources.
         }
       }
     }
@@ -1054,15 +1054,15 @@ export default function LiquidEther({
       if (resizeObserverRef.current) {
         try {
           resizeObserverRef.current.disconnect();
-        } catch (e) {
-          void 0;
+        } catch {
+          // Ignore cleanup errors while disposing WebGL resources.
         }
       }
       if (intersectionObserverRef.current) {
         try {
           intersectionObserverRef.current.disconnect();
-        } catch (e) {
-          void 0;
+        } catch {
+          // Ignore cleanup errors while disposing WebGL resources.
         }
       }
       if (webglRef.current) {
