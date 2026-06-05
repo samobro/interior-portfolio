@@ -1,5 +1,13 @@
 // client/src/utils/api.js - OPTIMIZED VERSION WITH TIMEOUT HANDLING
-const API_BASE = 'https://interior-portfolio-production.up.railway.app/api';
+export const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://interior-portfolio-production.up.railway.app/api';
+
+export const FALLBACK_CATEGORIES = [
+  { id: 1, name: 'Interior', cover_image: null },
+  { id: 2, name: 'Kitchen', cover_image: null },
+  { id: 3, name: 'Living Room', cover_image: null },
+  { id: 4, name: 'Bedroom', cover_image: null },
+  { id: 5, name: 'Office', cover_image: null },
+];
 
 const fetchWithTimeout = async (url, options = {}, timeoutMs = 60000) => {
   const controller = new AbortController();
@@ -31,13 +39,13 @@ const handleApiResponse = async (response, operation) => {
   return response.json();
 };
 
-// ✅ Get all categories (10 second timeout - quick operation)
+// ✅ Get all categories (short timeout so the home page never appears stuck)
 export async function fetchCategories() {
   console.log('🔄 Fetching categories...');
   const startTime = Date.now();
   
   try {
-    const res = await fetchWithTimeout(`${API_BASE}/categories`, {}, 30000);
+    const res = await fetchWithTimeout(`${API_BASE}/categories`, {}, 8000);
     const data = await handleApiResponse(res, 'Fetch categories');
     
     const duration = Date.now() - startTime;

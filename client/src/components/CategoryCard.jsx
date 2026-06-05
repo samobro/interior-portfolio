@@ -30,10 +30,12 @@ const CategoryCard = ({ item }) => {
     >
       <div className="relative">
         <div
-          className="aspect-[4/3] bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-          style={{
-            backgroundImage: `url(${item.cover_image ? toUrl(item.cover_image) : "/placeholder.jpg"})`,
-          }}
+          className="aspect-[4/3] bg-[linear-gradient(135deg,_rgba(232,221,208,0.96),_rgba(250,250,248,0.82)),radial-gradient(circle_at_top_left,_rgba(255,255,255,0.9),_transparent_42%)] bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+          style={
+            item.cover_image
+              ? { backgroundImage: `url(${toUrl(item.cover_image)})` }
+              : undefined
+          }
         />
       </div>
       <div className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white/80 px-4 py-2 backdrop-blur-sm">

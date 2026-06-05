@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ScrollHero from "../components/ScrollHero.jsx";
 import CategoryCard from "../components/CategoryCard.jsx";
-import { fetchCategories } from "../utils/api.js";
+import { FALLBACK_CATEGORIES, fetchCategories } from "../utils/api.js";
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
@@ -61,7 +61,8 @@ export default function Home() {
         const data = await fetchCategories();
         setCategories(data);
       } catch (e) {
-        setErr(e.message || "Failed to load categories");
+        setCategories(FALLBACK_CATEGORIES);
+        setErr(`${e.message || "Failed to load categories"}. Showing offline categories for now.`);
       } finally {
         setLoading(false);
       }
@@ -193,7 +194,7 @@ export default function Home() {
                 )}
 
                 <img
-                  src={`${import.meta.env.BASE_URL}hero-bg.png`}
+                  src={`${import.meta.env.BASE_URL}about-me.jpg`}
                   alt="Interior designer portrait"
                   className={`mx-auto h-full min-h-[360px] w-full rounded-[1.5rem] object-cover transition-opacity duration-700 ${
                     aboutImageLoaded ? "opacity-100" : "opacity-0"
@@ -249,7 +250,7 @@ export default function Home() {
                   Start a Conversation
                 </a>
                 <a
-                  href="/cv.pdf"
+                  href={`${import.meta.env.BASE_URL}cv.pdf`}
                   download
                   className="inline-flex items-center justify-center rounded-full border border-luxuryLine bg-white/70 px-7 py-3 text-sm font-semibold uppercase tracking-[0.24em] text-luxuryInk transition-colors duration-300 hover:bg-white"
                 >
