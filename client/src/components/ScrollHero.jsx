@@ -9,11 +9,28 @@ export default function ScrollHero() {
 
   useEffect(() => {
     const video = videoRef.current;
-    const handleCanPlay = () => setHeroReady(true);
+    const handleVideoReady = () => {
+      setHeroReady(true);
+      updateFromScroll();
+    };
 
-    if (video) {
-      video.addEventListener("canplay", handleCanPlay, { once: true });
-    }
+    const seekVideo = (progress) => {
+      const currentVideo = videoRef.current;
+      if (
+        !currentVideo ||
+        currentVideo.readyState < 1 ||
+        !Number.isFinite(currentVideo.duration) ||
+        currentVideo.duration <= 0
+      ) {
+        return;
+      }
+
+      try {
+        currentVideo.currentTime = progress * currentVideo.duration;
+      } catch (error) {
+        console.warn("Unable to seek hero video yet:", error);
+      }
+    };
 
     const updateFromScroll = () => {
       const sectionScrollable = Math.max(window.innerHeight * 4, 1);
@@ -22,13 +39,18 @@ export default function ScrollHero() {
 
       setScrollProgress(progress);
 
-      if (videoRef.current && videoRef.current.readyState >= 2) {
-        videoRef.current.currentTime = progress * videoRef.current.duration;
-      }
+      seekVideo(progress);
     };
 
+    if (video) {
+      video.addEventListener("loadedmetadata", handleVideoReady, { once: true });
+      video.addEventListener("canplay", handleVideoReady, { once: true });
+      if (video.readyState >= 1) {
+        handleVideoReady();
+      }
+    }
+
     updateFromScroll();
-    animationFrameId = window.requestAnimationFrame(animateFrame);
 
     let ticking = false;
     const handleScroll = () => {
@@ -46,7 +68,8 @@ export default function ScrollHero() {
 
     return () => {
       if (video) {
-        video.removeEventListener("canplay", handleCanPlay);
+        video.removeEventListener("loadedmetadata", handleVideoReady);
+        video.removeEventListener("canplay", handleVideoReady);
       }
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
@@ -78,7 +101,10 @@ export default function ScrollHero() {
           }`}
         />
 
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(0,0,0,0.08)_52%,rgba(0,0,0,0.18))]" />
+        <div
+          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(0,0,0,0.08)_52%,rgba(0,0,0,0.18))]"
+          style={{ opacity: overlayOpacity }}
+        />
 
         <div
           className="absolute inset-0 flex items-center justify-center px-6 pb-48"
@@ -89,11 +115,11 @@ export default function ScrollHero() {
             pointerEvents: textOpacity < 0.05 ? "none" : "auto",
           }}
         >
-            <img
-              src={`${import.meta.env.BASE_URL}logo.png`}
-              alt="A.Interiors logo"
-              className="w-64 object-contain drop-shadow-xl sm:w-80 lg:w-96"
-            />
+          <img
+            src={`${import.meta.env.BASE_URL}logo.png`}
+            alt="A.Interiors logo"
+            className="w-64 object-contain drop-shadow-xl sm:w-80 lg:w-96"
+          />
         </div>
       </div>
     </section>

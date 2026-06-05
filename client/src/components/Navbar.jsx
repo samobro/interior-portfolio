@@ -3,6 +3,7 @@ import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+  const cvHref = `${import.meta.env.BASE_URL}cv.pdf`;
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -102,7 +103,7 @@ export default function Navbar() {
 
         {/* CV (desktop) */}
         <a
-          href="/cv.pdf"
+          href={cvHref}
           className="hidden md:inline rounded-full border border-luxuryLine bg-white/55 px-3 py-1.5 text-sm text-luxuryInk hover:border-[#b89b7d] hover:bg-white transition-all duration-300"
           download
         >
@@ -167,7 +168,7 @@ export default function Navbar() {
           </button>
 
           <a
-            href="/cv.pdf"
+            href={cvHref}
             className="rounded-full border border-luxuryLine bg-white/55 px-3 py-1.5 text-sm text-luxuryInk hover:border-[#b89b7d] hover:bg-white transition-all duration-500"
             download
             onClick={() => setMenuOpen(false)}
