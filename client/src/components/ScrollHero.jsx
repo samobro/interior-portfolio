@@ -80,7 +80,7 @@ export default function ScrollHero() {
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(0,0,0,0.08)_52%,rgba(0,0,0,0.18))]" />
 
         <div
-          className="absolute inset-0 flex items-center justify-center px-6 pb-24"
+          className="absolute inset-0 flex items-center justify-center px-6 pb-48"
           style={{
             opacity: textOpacity,
             transform: `translate3d(0, ${textTranslateY}px, 0)`,
