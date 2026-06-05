@@ -3,6 +3,11 @@ import { fetchProjects } from "../utils/api";
 import { Link } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 
+const optimizeImageUrl = (url) => {
+  if (!url || !url.includes("cloudinary.com")) return url;
+  return url.includes("?") ? url : `${url}?w=800&q=auto&f=auto`;
+};
+
 // Separate component for each project card
 function ProjectCard({ project }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2 });
@@ -22,9 +27,10 @@ function ProjectCard({ project }) {
         {project.images?.[0] && (
           <div className="relative mb-4 overflow-hidden rounded-xl">
             <img
-              src={project.images[0].path}
+              src={optimizeImageUrl(project.images[0].path)}
               alt={project.title}
               className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+              loading="lazy"
             />
             {/* Image overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

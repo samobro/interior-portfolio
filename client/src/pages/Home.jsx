@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ScrollHero from "../components/ScrollHero.jsx";
 import CategoryCard from "../components/CategoryCard.jsx";
@@ -10,6 +10,15 @@ export default function Home() {
   const [err, setErr] = useState(null);
   const [aboutImageLoaded, setAboutImageLoaded] = useState(false);
   const location = useLocation();
+  const categoriesScrollRef = useRef(null);
+
+  const scrollCategories = (direction) => {
+    if (!categoriesScrollRef.current) return;
+    categoriesScrollRef.current.scrollBy({
+      left: direction === "left" ? -400 : 400,
+      behavior: "smooth",
+    });
+  };
 
   useEffect(() => {
     if (!location.state?.scrollTo) return;
@@ -117,32 +126,52 @@ export default function Home() {
             </div>
           )}
 
-          <div
-            className="scrollbar-hide flex gap-6 overflow-x-auto px-1 py-10 touch-pan-x"
-            style={{
-              overflowY: "hidden",
-              WebkitOverflowScrolling: "touch",
-            }}
-            onTouchStart={(e) => {
-              e.currentTarget.touchStartY = e.touches[0].clientY;
-              e.currentTarget.touchStartX = e.touches[0].clientX;
-            }}
-            onTouchMove={(e) => {
-              const touchY = e.touches[0].clientY;
-              const startY = e.currentTarget.touchStartY;
-              const deltaY = Math.abs(touchY - startY);
-              const deltaX = Math.abs(
-                e.touches[0].clientX - (e.currentTarget.touchStartX || e.touches[0].clientX)
-              );
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="Scroll left"
+              onClick={() => scrollCategories("left")}
+              className="absolute left-0 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-luxuryLine bg-white/80 p-3 text-luxuryInk shadow-md transition hover:bg-white lg:inline-flex"
+            >
+              <span aria-hidden="true">←</span>
+            </button>
+            <button
+              type="button"
+              aria-label="Scroll right"
+              onClick={() => scrollCategories("right")}
+              className="absolute right-0 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-luxuryLine bg-white/80 p-3 text-luxuryInk shadow-md transition hover:bg-white lg:inline-flex"
+            >
+              <span aria-hidden="true">→</span>
+            </button>
 
-              if (deltaX > deltaY) {
-                e.preventDefault();
-              }
-            }}
-          >
-            {categories.map((category) => (
-              <CategoryCard key={category.id} item={category} />
-            ))}
+            <div
+              ref={categoriesScrollRef}
+              className="scrollbar-hide flex gap-6 overflow-x-auto px-1 py-10 touch-pan-x"
+              style={{
+                overflowY: "hidden",
+                WebkitOverflowScrolling: "touch",
+              }}
+              onTouchStart={(e) => {
+                e.currentTarget.touchStartY = e.touches[0].clientY;
+                e.currentTarget.touchStartX = e.touches[0].clientX;
+              }}
+              onTouchMove={(e) => {
+                const touchY = e.touches[0].clientY;
+                const startY = e.currentTarget.touchStartY;
+                const deltaY = Math.abs(touchY - startY);
+                const deltaX = Math.abs(
+                  e.touches[0].clientX - (e.currentTarget.touchStartX || e.touches[0].clientX)
+                );
+
+                if (deltaX > deltaY) {
+                  e.preventDefault();
+                }
+              }}
+            >
+              {categories.map((category) => (
+                <CategoryCard key={category.id} item={category} />
+              ))}
+            </div>
           </div>
         </div>
       </section>

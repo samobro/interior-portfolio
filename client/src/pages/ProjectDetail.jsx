@@ -2,6 +2,11 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 
+const optimizeImageUrl = (url) => {
+  if (!url || !url.includes("cloudinary.com")) return url;
+  return url.includes("?") ? url : `${url}?w=800&q=auto&f=auto`;
+};
+
 export default function ProjectDetail() {
   const { id } = useParams();
   const [project, setProject] = useState(null);
@@ -173,7 +178,7 @@ export default function ProjectDetail() {
             <div className="relative group mb-8">
               <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-[#e8ddd0] blur opacity-40 transition duration-1000 group-hover:opacity-60"></div>
               <img
-                src={project.images[0].path}
+                src={optimizeImageUrl(project.images[0].path)}
                 alt={project.title}
                 className="relative z-10 w-full cursor-pointer rounded-2xl border border-luxuryLine shadow-2xl transition-all duration-500 hover:border-[#b89b7d]"
                 onClick={() => openLightbox(0)}
@@ -190,9 +195,10 @@ export default function ProjectDetail() {
                   <div className="absolute -inset-0.5 rounded-xl bg-[#e8ddd0] blur opacity-0 transition duration-700 group-hover:opacity-50"></div>
                   <div className="relative">
                     <img
-                      src={img.path}
+                      src={optimizeImageUrl(img.path)}
                       alt={`${project.title}-${i + 2}`}
                       className="h-48 w-full cursor-pointer rounded-xl border border-luxuryLine object-cover transition-all duration-300 hover:scale-105 hover:border-[#b89b7d]"
+                      loading="lazy"
                       onClick={() => openLightbox(i + 1)}
                     />
                   </div>
@@ -206,7 +212,7 @@ export default function ProjectDetail() {
       {/* Original Lightbox Modal - Only styled, functionality unchanged */}
       {lightboxOpen && project.images && (
         <div 
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 h-screen w-screen bg-black/90 backdrop-blur-sm"
           onClick={closeLightbox}
         >
           {/* Close button */}
@@ -219,7 +225,10 @@ export default function ProjectDetail() {
           </button>
 
           {/* Image counter */}
-          <div className="absolute top-4 left-4 z-10 rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-white/70 backdrop-blur-sm">
+          <div
+            className="absolute top-4 left-4 z-10 rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-white/70 backdrop-blur-sm"
+            aria-live="polite"
+          >
             {currentImageIndex + 1} / {project.images.length}
           </div>
 
@@ -252,12 +261,14 @@ export default function ProjectDetail() {
           )}
 
           {/* Main image */}
-          <img
-            src={project.images[currentImageIndex].path}
-            alt={`${project.title}-${currentImageIndex + 1}`}
-            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <img
+              src={optimizeImageUrl(project.images[currentImageIndex].path)}
+              alt={`${project.title}-${currentImageIndex + 1}`}
+              className="max-w-full max-h-full object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
 
           {/* Instructions text */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg border border-white/10 bg-black/30 px-4 py-2 text-center text-sm text-white/50 backdrop-blur-sm">
