@@ -20,7 +20,7 @@ export default function ProjectDetail() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`https://interior-portfolio-production.up.railway.app/api/projects/${id}`);
+        const res = await fetch(`https://interior-portfolio-production-4108.up.railway.app/api/projects/${id}`);
         if (!res.ok) throw new Error("Failed to fetch project");
         const data = await res.json();
         setProject(data);
@@ -218,7 +218,7 @@ export default function ProjectDetail() {
           {/* Close button */}
           <button
             onClick={closeLightbox}
-            className="absolute top-4 right-4 z-10 rounded-full border border-white/15 bg-white/10 p-2 text-3xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
+            className="fixed top-4 right-4 z-10 rounded-full border border-white/15 bg-white/10 p-2 text-3xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
             aria-label="Close lightbox"
           >
             ✕
@@ -239,7 +239,7 @@ export default function ProjectDetail() {
                 e.stopPropagation();
                 goToPrevious();
               }}
-              className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/15 bg-white/10 p-3 text-4xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
+              className="fixed left-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/15 bg-white/10 p-3 text-4xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
               aria-label="Previous image"
             >
               ‹
@@ -253,7 +253,7 @@ export default function ProjectDetail() {
                 e.stopPropagation();
                 goToNext();
               }}
-              className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/15 bg-white/10 p-3 text-4xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
+              className="fixed right-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/15 bg-white/10 p-3 text-4xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
               aria-label="Next image"
             >
               ›
@@ -265,13 +265,13 @@ export default function ProjectDetail() {
             <img
               src={optimizeImageUrl(project.images[currentImageIndex].path)}
               alt={`${project.title}-${currentImageIndex + 1}`}
-              className="max-w-full max-h-full object-contain"
+              className="max-w-[95vw] max-h-[90vh] object-contain"
               onClick={(e) => e.stopPropagation()}
             />
           </div>
 
           {/* Instructions text */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg border border-white/10 bg-black/30 px-4 py-2 text-center text-sm text-white/50 backdrop-blur-sm">
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 rounded-lg border border-white/10 bg-black/30 px-4 py-2 text-center text-sm text-white/50 backdrop-blur-sm">
             <p className="hidden md:block">Use arrow keys or click buttons to navigate • ESC to close</p>
             <p className="md:hidden">Tap arrows to navigate • Tap outside to close</p>
           </div>
