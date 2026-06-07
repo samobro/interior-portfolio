@@ -276,7 +276,7 @@ export default function ProjectDetail() {
 
           {/* Main image — pointer-events-none so clicks pass through to overlay */}
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            className="fixed inset-0 z-50 flex items-center justify-center pt-16 pointer-events-none"
           >
             <img
               src={optimizeImageUrl(project.images[currentImageIndex].path)}
