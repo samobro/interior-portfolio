@@ -105,11 +105,13 @@ app.get("/api/health", (req, res) => {
 // Routes
 const categoryRoutes = require("./routes/categoryRoutes");
 const projectRoutes = require("./routes/projectRoutes");
-const authRoutes = require("./routes/authRoutes");
+const { requireAdmin } = require("./middleware/clerkAuth");
 
-app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/admin", requireAdmin);
+app.use("/api/admin/categories", categoryRoutes);
+app.use("/api/admin/projects", projectRoutes);
 
 // ---------------- ERROR HANDLING MIDDLEWARE -----------------
 app.use((error, req, res, next) => {

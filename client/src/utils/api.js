@@ -1,5 +1,5 @@
 // client/src/utils/api.js - OPTIMIZED VERSION WITH TIMEOUT HANDLING
-export const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://interior-portfolio-production.up.railway.app/api';
+export const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://interior-portfolio-production-4108.up.railway.app/api';
 
 export const FALLBACK_CATEGORIES = [
   { id: 1, name: 'Interior', cover_image: null },
