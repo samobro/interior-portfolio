@@ -8,6 +8,26 @@ const optimizeImageUrl = (url) => {
   return url.includes("?") ? url : `${url}?w=800&q=auto&f=auto`;
 };
 
+const PROJECT_SKELETONS = Array.from({ length: 6 }, (_, i) => i);
+
+function ProjectCardSkeleton() {
+  return (
+    <div
+      className="rounded-2xl border border-luxuryLine bg-white/80 p-4 backdrop-blur-lg"
+      aria-hidden="true"
+    >
+      <div className="mb-4 h-48 animate-pulse rounded-xl bg-[linear-gradient(110deg,_rgba(232,221,208,0.7)_8%,_rgba(255,255,255,0.9)_18%,_rgba(232,221,208,0.72)_33%)] bg-[length:200%_100%]" />
+
+      <div className="space-y-2">
+        <div className="h-2 w-20 animate-pulse rounded-full bg-luxuryLine/80" />
+        <div className="h-5 w-40 animate-pulse rounded-full bg-luxuryLine/70" />
+        <div className="h-3 w-full animate-pulse rounded-full bg-luxuryLine/70" />
+        <div className="h-3 w-4/5 animate-pulse rounded-full bg-luxuryLine/70" />
+      </div>
+    </div>
+  );
+}
+
 // Separate component for each project card
 function ProjectCard({ project }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2 });
@@ -87,21 +107,6 @@ export default function Projects() {
     })();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-luxuryBg">
-        <div className="max-w-6xl mx-auto px-4 pt-20">
-          <div className="flex justify-center items-center py-20">
-            <div className="relative w-20 h-20">
-              <div className="absolute inset-0 rounded-full border border-luxuryLine"></div>
-              <div className="absolute inset-0 animate-spin rounded-full border-2 border-[#b89b7d] border-t-transparent"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   if (err) {
     return (
       <div className="min-h-screen bg-luxuryBg">
@@ -116,7 +121,7 @@ export default function Projects() {
     );
   }
 
-  if (!projects.length) {
+  if (!loading && !projects.length) {
     return (
       <div className="min-h-screen bg-luxuryBg">
         <div className="max-w-6xl mx-auto px-4 pt-20">
@@ -156,9 +161,9 @@ export default function Projects() {
 
           {/* Projects Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((p) => (
-              <ProjectCard key={p.id} project={p} />
-            ))}
+            {loading
+              ? PROJECT_SKELETONS.map((i) => <ProjectCardSkeleton key={i} />)
+              : projects.map((p) => <ProjectCard key={p.id} project={p} />)}
           </div>
 
           {/* Bottom decoration
