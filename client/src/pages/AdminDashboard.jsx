@@ -1,7 +1,28 @@
 // client/src/pages/AdminDashboard.jsx
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { SignOutButton, useAuth, useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
+
+const API_BASE = "https://interior-portfolio-production-4108.up.railway.app/api";
+
+function LoadingSpinner() {
+  return (
+    <div className="min-h-screen bg-luxuryBg flex items-center justify-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-luxuryGold border-solid"></div>
+    </div>
+  );
+}
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+  const { getToken } = useAuth();
+  const { isLoaded, isSignedIn, user } = useUser();
+  const allowedEmails = useMemo(
+    () => (import.meta.env.VITE_ADMIN_EMAILS || "").split(",").map(e => e.trim()),
+    []
+  );
+  const userEmail = user?.primaryEmailAddress?.emailAddress;
+
   // ✅ ALL HOOKS FIRST - BEFORE ANY CONDITIONS
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
@@ -18,15 +39,15 @@ export default function AdminDashboard() {
   });
 
   // Helper function
-  const toUrl = (p) => {
+  const toUrl = useCallback((p) => {
     if (!p) return null;
-    return p.startsWith("http") ? p : `https://interior-portfolio-production.up.railway.app${p}`;
-  };
+    return p.startsWith("http") ? p : `https://interior-portfolio-production-4108.up.railway.app${p}`;
+  }, []);
 
   // Fetch functions
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
-      const res = await fetch("https://interior-portfolio-production.up.railway.app/api/categories");
+      const res = await fetch(`${API_BASE}/categories`);
       const data = await res.json();
       const normalized = data.map(c => ({
         ...c,
@@ -36,11 +57,11 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error("fetchCategories err", err);
     }
-  };
+  }, []);
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
-      const res = await fetch("https://interior-portfolio-production.up.railway.app/api/projects");
+      const res = await fetch(`${API_BASE}/projects`);
       const data = await res.json();
 
       const normalized = data.map(p => {
@@ -67,19 +88,46 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error("fetchProjects err", err);
     }
-  };
+  }, [toUrl]);
+
+  const adminFetch = useCallback(async (url, options = {}) => {
+    const token = await getToken();
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }, [getToken]);
 
   // ✅ useEffect hook
   useEffect(() => {
+    if (!isLoaded || !isSignedIn || !allowedEmails.includes(userEmail)) return;
     fetchCategories();
     fetchProjects();
-  }, []);
+  }, [allowedEmails, fetchCategories, fetchProjects, isLoaded, isSignedIn, userEmail]);
 
-  // ✅ NOW check token AFTER all hooks
-  const token = localStorage.getItem("adminToken");
-  if (!token) {
-    window.location.href = "/admin";
+  if (!isLoaded) return <LoadingSpinner />;
+  if (!isSignedIn) {
+    navigate('/admin');
     return null;
+  }
+
+  if (!allowedEmails.includes(userEmail)) {
+    return (
+      <div className="min-h-screen bg-luxuryBg flex items-center justify-center">
+        <div className="text-center p-8 rounded-2xl border border-white/10 bg-white/5">
+          <p className="text-white text-lg mb-4">Access Denied</p>
+          <p className="text-luxuryMuted text-sm">{userEmail} is not authorized.</p>
+          <SignOutButton>
+            <button className="mt-6 px-6 py-2 rounded-full border border-luxuryLine text-luxuryMuted text-sm hover:text-white transition">
+              Sign out
+            </button>
+          </SignOutButton>
+        </div>
+      </div>
+    );
   }
 
   // Category handlers
@@ -92,12 +140,12 @@ export default function AdminDashboard() {
       if (categoryForm.cover) formData.append("cover", categoryForm.cover);
 
       const url = categoryForm.id
-        ? `https://interior-portfolio-production.up.railway.app/api/categories/${categoryForm.id}`
-        : "https://interior-portfolio-production.up.railway.app/api/categories";
+        ? `${API_BASE}/admin/categories/${categoryForm.id}`
+        : `${API_BASE}/admin/categories`;
 
       const method = categoryForm.id ? "PUT" : "POST";
 
-      const res = await fetch(url, { method, body: formData });
+      const res = await adminFetch(url, { method, body: formData });
       if (!res.ok) {
         const err = await res.json().catch(()=>({error:'failed'}));
         throw new Error(err.error || "Failed to save category");
@@ -123,7 +171,7 @@ export default function AdminDashboard() {
     if (!window.confirm("Delete this category?")) return;
     setLoading(true);
     try {
-      await fetch(`https://interior-portfolio-production.up.railway.app/api/categories/${id}`, { method: "DELETE" });
+      await adminFetch(`${API_BASE}/admin/categories/${id}`, { method: "DELETE" });
       await fetchCategories();
     } catch (err) {
       console.error(err);
@@ -154,11 +202,11 @@ export default function AdminDashboard() {
       }
 
       const url = projectForm.id
-        ? `https://interior-portfolio-production.up.railway.app/api/projects/${projectForm.id}`
-        : "https://interior-portfolio-production.up.railway.app/api/projects";
+        ? `${API_BASE}/admin/projects/${projectForm.id}`
+        : `${API_BASE}/admin/projects`;
       const method = projectForm.id ? "PUT" : "POST";
 
-      const res = await fetch(url, { method, body: formData });
+      const res = await adminFetch(url, { method, body: formData });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: "failed" }));
         throw new Error(err.error || "Failed to save project");
@@ -193,7 +241,7 @@ export default function AdminDashboard() {
     if (!window.confirm("Delete this project?")) return;
     setLoading(true);
     try {
-      await fetch(`https://interior-portfolio-production.up.railway.app/api/projects/${id}`, { method: "DELETE" });
+      await adminFetch(`${API_BASE}/admin/projects/${id}`, { method: "DELETE" });
       await fetchProjects();
     } catch (err) {
       console.error(err);
@@ -208,7 +256,7 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       if (img.id) {
-        const res = await fetch(`https://interior-portfolio-production.up.railway.app/api/projects/image/${img.id}`, { method: "DELETE" });
+        const res = await adminFetch(`${API_BASE}/admin/projects/image/${img.id}`, { method: "DELETE" });
         if (!res.ok) throw new Error("Server failed to delete image");
       }
 
