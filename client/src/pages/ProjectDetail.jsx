@@ -261,7 +261,10 @@ export default function ProjectDetail() {
           )}
 
           {/* Main image */}
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div
+            className="fixed inset-0 flex items-center justify-center z-10"
+            onClick={(e) => e.stopPropagation()}
+          >
             <img
               src={optimizeImageUrl(project.images[currentImageIndex].path)}
               alt={`${project.title}-${currentImageIndex + 1}`}
