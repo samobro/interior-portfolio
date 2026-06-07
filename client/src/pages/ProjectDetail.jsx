@@ -87,14 +87,31 @@ export default function ProjectDetail() {
   };
 
   if (loading) {
+    const shimmerClass = "bg-[linear-gradient(110deg,_rgba(232,221,208,0.7)_8%,_rgba(255,255,255,0.9)_18%,_rgba(232,221,208,0.72)_33%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]";
     return (
       <div className="min-h-screen bg-luxuryBg">
         <div className="max-w-5xl mx-auto px-4 pt-20">
-          <div className="flex justify-center items-center py-20">
-            <div className="relative w-20 h-20">
-              <div className="absolute inset-0 rounded-full border border-luxuryLine"></div>
-              <div className="absolute inset-0 animate-spin rounded-full border-2 border-[#b89b7d] border-t-transparent"></div>
-            </div>
+          {/* Back button placeholder */}
+          <div className="mb-8">
+            <div className={`h-5 w-32 rounded-full ${shimmerClass}`}></div>
+          </div>
+          {/* Title placeholder */}
+          <div className="mb-4">
+            <div className={`h-10 w-2/3 rounded-xl ${shimmerClass}`}></div>
+          </div>
+          {/* Category placeholder */}
+          <div className="mb-6">
+            <div className={`h-4 w-24 rounded-full ${shimmerClass}`}></div>
+          </div>
+          {/* Main image placeholder */}
+          <div className="mb-8">
+            <div className={`h-[420px] w-full rounded-2xl ${shimmerClass}`}></div>
+          </div>
+          {/* Small image placeholders */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className={`h-48 rounded-xl ${shimmerClass}`}></div>
+            <div className={`h-48 rounded-xl ${shimmerClass}`}></div>
+            <div className={`h-48 rounded-xl ${shimmerClass}`}></div>
           </div>
         </div>
       </div>
@@ -211,14 +228,17 @@ export default function ProjectDetail() {
 
       {/* Original Lightbox Modal - Only styled, functionality unchanged */}
       {lightboxOpen && project.images && (
-        <div 
-          className="fixed inset-0 z-50 h-screen w-screen bg-black/90 backdrop-blur-sm"
-          onClick={closeLightbox}
-        >
+        <>
+          {/* Overlay — z-40, captures clicks to close */}
+          <div
+            className="fixed inset-0 z-40 h-screen w-screen bg-black/90 backdrop-blur-sm"
+            onClick={closeLightbox}
+          />
+
           {/* Close button */}
           <button
             onClick={closeLightbox}
-            className="fixed top-4 right-4 z-10 rounded-full border border-white/15 bg-white/10 p-2 text-3xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
+            className="fixed top-4 right-4 z-50 rounded-full border border-white/15 bg-white/10 p-2 text-3xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
             aria-label="Close lightbox"
           >
             ✕
@@ -226,7 +246,7 @@ export default function ProjectDetail() {
 
           {/* Image counter */}
           <div
-            className="absolute top-4 left-4 z-10 rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-white/70 backdrop-blur-sm"
+            className="fixed top-4 left-4 z-50 rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-white/70 backdrop-blur-sm"
             aria-live="polite"
           >
             {currentImageIndex + 1} / {project.images.length}
@@ -235,11 +255,8 @@ export default function ProjectDetail() {
           {/* Previous button */}
           {project.images.length > 1 && (
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                goToPrevious();
-              }}
-              className="fixed left-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/15 bg-white/10 p-3 text-4xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
+              onClick={goToPrevious}
+              className="fixed left-4 top-1/2 z-50 -translate-y-1/2 rounded-full border border-white/15 bg-white/10 p-3 text-4xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
               aria-label="Previous image"
             >
               ‹
@@ -249,36 +266,31 @@ export default function ProjectDetail() {
           {/* Next button */}
           {project.images.length > 1 && (
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                goToNext();
-              }}
-              className="fixed right-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/15 bg-white/10 p-3 text-4xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
+              onClick={goToNext}
+              className="fixed right-4 top-1/2 z-50 -translate-y-1/2 rounded-full border border-white/15 bg-white/10 p-3 text-4xl text-white/70 transition-all duration-300 hover:border-[#d8c4ac] hover:bg-[#d8c4ac]/20 hover:text-white"
               aria-label="Next image"
             >
               ›
             </button>
           )}
 
-          {/* Main image */}
+          {/* Main image — pointer-events-none so clicks pass through to overlay */}
           <div
-            className="fixed inset-0 flex items-center justify-center z-10"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
           >
             <img
               src={optimizeImageUrl(project.images[currentImageIndex].path)}
               alt={`${project.title}-${currentImageIndex + 1}`}
-              className="max-w-[95vw] max-h-[90vh] object-contain"
-              onClick={(e) => e.stopPropagation()}
+              className="w-full h-full object-contain"
             />
           </div>
 
           {/* Instructions text */}
-          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 rounded-lg border border-white/10 bg-black/30 px-4 py-2 text-center text-sm text-white/50 backdrop-blur-sm">
+          <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-white/10 bg-black/30 px-4 py-2 text-center text-sm text-white/50 backdrop-blur-sm">
             <p className="hidden md:block">Use arrow keys or click buttons to navigate • ESC to close</p>
             <p className="md:hidden">Tap arrows to navigate • Tap outside to close</p>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
