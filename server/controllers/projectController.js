@@ -1,6 +1,5 @@
 // server/controllers/projectController.js
 const Project = require("../models/projectModel");
-const { cache } = require('../server');
 
 async function getProjects(req, res) {
   try {

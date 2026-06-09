@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 const { upload, uploadToCloudinary, deleteFromCloudinary, uploadMultipleToCloudinary } = require("../middleware/cloudinaryUpload");
-const { cache } = require('../server'); // ADD THIS
+const cache = require('../config/cache'); // ADD THIS
 const { requireAdmin } = require("../middleware/clerkAuth");
 
 // Helper function to extract Cloudinary public ID from URL
