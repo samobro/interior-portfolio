@@ -4,6 +4,7 @@ const pool = require("../config/db");
 const { getCategories, getCategoryById } = require("../controllers/categoryController");
 const { upload, uploadToCloudinary, deleteFromCloudinary } = require("../middleware/cloudinaryUpload");
 const { cache } = require('../server');
+const { requireAdmin } = require("../middleware/clerkAuth");
 
 // Helper function to extract Cloudinary public ID from URL
 const getPublicIdFromUrl = (url) => {
@@ -19,7 +20,7 @@ router.get("/", getCategories);
 router.get("/:id", getCategoryById);
 
 // POST add category with optional cover image
-router.post("/", upload.single("cover"), async (req, res) => {
+router.post("/", requireAdmin, upload.single("cover"), async (req, res) => {
   try {
     const { name } = req.body;
     if (!name) return res.status(400).json({ error: "Category name required" });
@@ -55,7 +56,7 @@ router.post("/", upload.single("cover"), async (req, res) => {
 
 
 // ===== UPDATE CATEGORY =====
-router.put("/:id", upload.single("cover"), async (req, res) => {
+router.put("/:id", requireAdmin, upload.single("cover"), async (req, res) => {
   try {
     const categoryId = req.params.id;
     const { name } = req.body;
@@ -110,7 +111,7 @@ router.put("/:id", upload.single("cover"), async (req, res) => {
 });
 
 // DELETE category by ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAdmin, async (req, res) => {
   try {
     const categoryId = req.params.id;
 

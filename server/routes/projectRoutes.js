@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require("../config/db");
 const { upload, uploadToCloudinary, deleteFromCloudinary, uploadMultipleToCloudinary } = require("../middleware/cloudinaryUpload");
 const { cache } = require('../server'); // ADD THIS
+const { requireAdmin } = require("../middleware/clerkAuth");
 
 // Helper function to extract Cloudinary public ID from URL
 const getPublicIdFromUrl = (url) => {
@@ -171,7 +172,7 @@ router.get("/category/:id", async (req, res) => {
 });
 
 // ===== OPTIMIZED: ADD PROJECT with Cloudinary =====
-router.post("/", upload.array("images", 10), async (req, res) => {
+router.post("/", requireAdmin, upload.array("images", 10), async (req, res) => {
   const startTime = Date.now();
   try {
     const { title, description, category_id } = req.body;
@@ -328,7 +329,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // ===== OPTIMIZED: UPDATE PROJECT =====
-router.put("/:id", upload.array("images", 10), async (req, res) => {
+router.put("/:id", requireAdmin, upload.array("images", 10), async (req, res) => {
   const startTime = Date.now();
   try {
     const projectId = req.params.id;
@@ -420,7 +421,7 @@ router.put("/:id", upload.array("images", 10), async (req, res) => {
 });
 
 // ===== OPTIMIZED: DELETE PROJECT =====
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAdmin, async (req, res) => {
   const startTime = Date.now();
   try {
     const projectId = req.params.id;
@@ -467,7 +468,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // ===== OPTIMIZED: DELETE single image =====
-router.delete("/image/:id", async (req, res) => {
+router.delete("/image/:id", requireAdmin, async (req, res) => {
   const startTime = Date.now();
   try {
     const imageId = req.params.id;
