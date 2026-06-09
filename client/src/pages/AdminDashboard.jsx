@@ -318,30 +318,30 @@ export default function AdminDashboard() {
         <button onClick={() => setActiveTab("projects")} className={`py-2 px-4 rounded-lg ${activeTab==="projects" ? "bg-luxuryGold text-black" : ""}`}>Projects</button>
       </aside>
 
-      <main className="flex-1 p-8 overflow-auto">
+      <main className="flex-1 p-8 overflow-auto text-luxuryInk">
         {activeTab === "home" && (
           <div className="text-center mt-20">
-            <h1 className="text-4xl font-bold mb-4">Welcome Admin!</h1>
-            <p className="text-lg text-white/70">Use the buttons on the left to manage Categories and Projects.</p>
+            <h1 className="text-4xl font-bold mb-4 text-luxuryInk">Welcome Admin!</h1>
+            <p className="text-lg text-luxuryMuted">Use the buttons on the left to manage Categories and Projects.</p>
           </div>
         )}
 
         {activeTab === "categories" && (
           <div>
-            <h2 className="text-2xl font-bold mb-4">Categories</h2>
+            <h2 className="text-2xl font-bold mb-4 text-luxuryInk">Categories</h2>
             <form onSubmit={handleCategorySubmit} className="mb-6 flex flex-col gap-3">
-              <input type="text" value={categoryForm.name} onChange={e=>setCategoryForm({...categoryForm, name:e.target.value})} placeholder="Category Name" className="px-4 py-2 rounded-lg bg-luxuryBg border border-white/10 text-white"/>
+              <input type="text" value={categoryForm.name} onChange={e=>setCategoryForm({...categoryForm, name:e.target.value})} placeholder="Category Name" className="px-4 py-2 rounded-lg bg-white border border-luxuryLine text-luxuryInk placeholder:text-luxuryMuted"/>
               {categoryForm.existingCover && !categoryForm.cover && (
                 <img src={toUrl(categoryForm.existingCover)} alt="cover" className="w-48 h-32 object-cover rounded-lg"/>
               )}
-              <input type="file" accept="image/*" onChange={onCategoryFileChange} className="text-white"/>
+              <input type="file" accept="image/*" onChange={onCategoryFileChange} className="text-luxuryInk"/>
               {categoryForm.cover && <img src={URL.createObjectURL(categoryForm.cover)} alt="preview" className="w-48 h-32 object-cover rounded-lg"/>}
               <button className="bg-luxuryGold text-black px-4 py-2 rounded-lg">{categoryForm.id ? "Save Category" : "Add Category"}</button>
             </form>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {categories.map(c => (
-                <div key={c.id} className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+                <div key={c.id} className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5 text-white">
                   {c.cover_image && <img src={toUrl(c.cover_image)} alt={c.name} className="w-full h-32 object-cover"/>}
                   <div className="p-4 flex justify-between items-center">
                     <span>{c.name}</span>
@@ -358,11 +358,11 @@ export default function AdminDashboard() {
 
         {activeTab === "projects" && (
           <div>
-            <h2 className="text-2xl font-bold mb-4">Projects</h2>
+            <h2 className="text-2xl font-bold mb-4 text-luxuryInk">Projects</h2>
             <form onSubmit={handleProjectSubmit} className="mb-6 flex flex-col gap-3">
-              <input type="text" value={projectForm.title} onChange={e=>setProjectForm({...projectForm, title:e.target.value})} placeholder="Project Title" className="px-4 py-2 rounded-lg bg-luxuryBg border border-white/10 text-white"/>
-              <textarea value={projectForm.description} onChange={e=>setProjectForm({...projectForm, description:e.target.value})} placeholder="Project Description" className="px-4 py-2 rounded-lg bg-luxuryBg border border-white/10 text-white"/>
-              <select value={projectForm.category_id} onChange={e=>setProjectForm({...projectForm, category_id:e.target.value})} className="px-4 py-2 rounded-lg bg-luxuryBg border border-white/10 text-white">
+              <input type="text" value={projectForm.title} onChange={e=>setProjectForm({...projectForm, title:e.target.value})} placeholder="Project Title" className="px-4 py-2 rounded-lg bg-white border border-luxuryLine text-luxuryInk placeholder:text-luxuryMuted"/>
+              <textarea value={projectForm.description} onChange={e=>setProjectForm({...projectForm, description:e.target.value})} placeholder="Project Description" className="px-4 py-2 rounded-lg bg-white border border-luxuryLine text-luxuryInk placeholder:text-luxuryMuted"/>
+              <select value={projectForm.category_id} onChange={e=>setProjectForm({...projectForm, category_id:e.target.value})} className="px-4 py-2 rounded-lg bg-white border border-luxuryLine text-luxuryInk placeholder:text-luxuryMuted">
                 <option value="">Select Category</option>
                 {categories.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
@@ -376,7 +376,7 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               )}
-              <input type="file" accept="image/*" multiple onChange={onProjectFilesChange} className="text-white"/>
+              <input type="file" accept="image/*" multiple onChange={onProjectFilesChange} className="text-luxuryInk"/>
               {projectForm.images && projectForm.images.length > 0 && (
                 <div className="flex gap-2 mt-2 flex-wrap">
                   {Array.from(projectForm.images).map((f, i) => (
@@ -389,7 +389,7 @@ export default function AdminDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map(p => (
-                <div key={p.id} className="rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+                <div key={p.id} className="rounded-2xl overflow-hidden border border-white/10 bg-white/5 text-white">
                   {firstImagePath(p) && <img src={firstImagePath(p)} alt={p.title} className="w-full h-48 object-cover"/>}
                   <div className="p-4 flex justify-between items-center">
                     <div>
