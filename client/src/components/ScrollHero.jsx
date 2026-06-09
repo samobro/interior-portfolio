@@ -2,6 +2,19 @@ import { useEffect, useRef, useState } from "react";
 
 const clamp = (value, min = 0, max = 1) => Math.min(Math.max(value, min), max);
 
+/**
+ * Lerp factor — controls how quickly the displayed time catches up
+ * to the target scroll position. Lower = smoother but more "floaty",
+ * higher = snappier but can show jank if seeks are slow.
+ */
+const LERP_FACTOR = 0.12;
+
+/**
+ * If the distance between current and target is smaller than this,
+ * snap directly (avoids infinite micro-seeks).
+ */
+const SNAP_THRESHOLD = 0.0005;
+
 export default function ScrollHero() {
   const [heroReady, setHeroReady] = useState(false);
   const videoRef = useRef(null);
@@ -9,36 +22,36 @@ export default function ScrollHero() {
   // ✅ بدل useState، نستخدم refs للـ DOM مباشرة — بدون re-render
   const textLayerRef = useRef(null);
   const overlayRef = useRef(null);
-  const scrollProgressRef = useRef(0);
+
+  // Scroll-driven animation refs
+  const targetProgressRef = useRef(0);   // where scroll wants us to be
+  const currentProgressRef = useRef(0);  // where we visually are (lerped)
+  const rafIdRef = useRef(null);
 
   useEffect(() => {
     const video = videoRef.current;
 
+    // ─── Seek helper ─────────────────────────────────────
     const seekVideo = (progress) => {
-      const currentVideo = videoRef.current;
-      if (
-        !currentVideo ||
-        currentVideo.readyState < 1 ||
-        !Number.isFinite(currentVideo.duration) ||
-        currentVideo.duration <= 0
-      ) {
+      const v = videoRef.current;
+      if (!v || v.readyState < 2 || !Number.isFinite(v.duration) || v.duration <= 0) {
         return;
       }
-      try {
-        currentVideo.currentTime = progress * currentVideo.duration;
-      } catch (error) {
-        console.warn("Unable to seek hero video yet:", error);
+      const targetTime = progress * v.duration;
+      // Only seek when the difference is meaningful (> half a frame)
+      const frameDuration = 1 / 24;
+      if (Math.abs(v.currentTime - targetTime) > frameDuration * 0.4) {
+        // Use fastSeek when available — much faster for all-intra video
+        if (typeof v.fastSeek === "function") {
+          v.fastSeek(targetTime);
+        } else {
+          v.currentTime = targetTime;
+        }
       }
     };
 
-    const updateFromScroll = () => {
-      const sectionScrollable = Math.max(window.innerHeight * 4, 1);
-      const progress = clamp(window.scrollY / sectionScrollable);
-
-      // ✅ نحدث الـ ref بدون setState
-      scrollProgressRef.current = progress;
-
-      // ✅ نحرك الـ DOM مباشرة بدون re-render
+    // ─── Update DOM directly (no re-renders) ─────────────
+    const updateVisuals = (progress) => {
       const textOpacity = 1 - clamp((progress - 0.25) / 0.25);
       const textTranslateY = clamp((progress - 0.25) / 0.25) * -72;
       const textBlur = clamp((progress - 0.25) / 0.25) * 12;
@@ -55,45 +68,75 @@ export default function ScrollHero() {
       if (overlayRef.current) {
         overlayRef.current.style.opacity = overlayOpacity;
       }
-
-      seekVideo(progress);
     };
 
+    // ─── rAF animation loop (always running while mounted) ─
+    const tick = () => {
+      const target = targetProgressRef.current;
+      let current = currentProgressRef.current;
+
+      const diff = target - current;
+
+      if (Math.abs(diff) < SNAP_THRESHOLD) {
+        // Close enough — snap and stop micro-seeking
+        current = target;
+      } else {
+        // Lerp toward target for buttery smoothness
+        current += diff * LERP_FACTOR;
+      }
+
+      currentProgressRef.current = current;
+
+      updateVisuals(current);
+      seekVideo(current);
+
+      rafIdRef.current = requestAnimationFrame(tick);
+    };
+
+    // ─── Scroll handler — only updates target, very cheap ──
+    const handleScroll = () => {
+      const sectionScrollable = Math.max(window.innerHeight * 4, 1);
+      targetProgressRef.current = clamp(window.scrollY / sectionScrollable);
+    };
+
+    // ─── Video ready handler ─────────────────────────────
     const handleVideoReady = () => {
-      setHeroReady(true); // ✅ مرة وحدة فقط
-      updateFromScroll();
+      setHeroReady(true);
+      handleScroll();        // sync target to current scroll
+      currentProgressRef.current = targetProgressRef.current; // start in sync
+      seekVideo(currentProgressRef.current);
+      updateVisuals(currentProgressRef.current);
     };
 
+    // ─── Setup ───────────────────────────────────────────
     if (video) {
-      video.addEventListener("loadedmetadata", handleVideoReady, { once: true });
-      video.addEventListener("canplay", handleVideoReady, { once: true });
-      if (video.readyState >= 1) {
+      video.addEventListener("loadeddata", handleVideoReady, { once: true });
+      if (video.readyState >= 2) {
         handleVideoReady();
       }
     }
 
-    updateFromScroll();
+    // Fire initial scroll position
+    handleScroll();
+    currentProgressRef.current = targetProgressRef.current;
+    updateVisuals(currentProgressRef.current);
 
-    let ticking = false;
-    const handleScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(() => {
-        updateFromScroll();
-        ticking = false;
-      });
-    };
+    // Start the animation loop
+    rafIdRef.current = requestAnimationFrame(tick);
 
+    // Scroll listener — passive for performance
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
+    window.addEventListener("resize", handleScroll, { passive: true });
 
     return () => {
       if (video) {
-        video.removeEventListener("loadedmetadata", handleVideoReady);
-        video.removeEventListener("canplay", handleVideoReady);
+        video.removeEventListener("loadeddata", handleVideoReady);
       }
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
     };
   }, []);
 
@@ -111,7 +154,7 @@ export default function ScrollHero() {
           src={`${import.meta.env.BASE_URL}frames/hero.mp4`}
           muted
           playsInline
-          preload="metadata"  // ✅ بدل "auto" — يحمّل بس البداية مش كل الفيديو
+          preload="auto"
           className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-300 ${
             heroReady ? "opacity-100" : "opacity-0"
           }`}
