@@ -1,7 +1,7 @@
 // server/controllers/categoryController.js
 const pool = require("../config/db");
 
-const { cache } = require('../server');
+const cache = require('../config/cache');
 
 async function getCategories(req, res) {
   try {
