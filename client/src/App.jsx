@@ -5,6 +5,7 @@ import Projects from "./pages/Projects.jsx";
 import ProjectDetail from "./pages/ProjectDetail.jsx";
 import AdminLogin from "./pages/AdminLogin.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+import SSOCallback from "./pages/SSOCallback.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 
@@ -22,6 +23,7 @@ export default function App() {
 
           {/* Admin pages */}
           <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/sso-callback" element={<SSOCallback />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </main>
