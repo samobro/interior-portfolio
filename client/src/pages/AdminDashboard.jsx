@@ -393,6 +393,54 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
+
+
+            <div className="mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">Recent Categories</h2>
+                <button onClick={() => setActiveTab("categories")} className="text-[#B47B3A] hover:underline flex items-center gap-1 font-medium">
+                  View all <FiArrowRight />
+                </button>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div className="divide-y divide-gray-200">
+                  {[...categories].reverse().slice(0, 3).map((c, index) => {
+                    const catProjects = projects.filter(p => p.category_id === c.id);
+                    return (
+                      <div key={c.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition">
+                        <div className="flex items-center gap-4">
+                          {c.cover_image ? (
+                            <img src={toUrl(c.cover_image)} alt={c.name} className="w-16 h-16 object-cover rounded-lg border border-gray-100" />
+                          ) : (
+                            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 border border-gray-200">
+                              <FiFolder size={24} />
+                            </div>
+                          )}
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="text-lg font-semibold text-gray-900">{c.name}</h3>
+                              {index === 0 && (
+                                <span className="bg-[#F0E9E0] text-[#B47B3A] text-xs px-2 py-0.5 rounded-full font-medium">
+                                  Latest
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500">
+                              {catProjects.length} {catProjects.length === 1 ? 'project' : 'projects'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {categories.length === 0 && (
+                    <div className="p-8 text-center text-gray-500">
+                      No categories found.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

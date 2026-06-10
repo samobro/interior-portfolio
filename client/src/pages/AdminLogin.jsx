@@ -65,7 +65,7 @@ export default function AdminLogin() {
             <button
               type="button"
               onClick={() => signOut()}
-              className="w-full rounded-full border border-white/15 bg-luxuryBg px-6 py-4 font-display text-base text-white shadow-lg shadow-black/25 transition duration-300 hover:border-white/30 hover:bg-white/10"
+              className="w-full rounded-full border border-gray-200 bg-white px-6 py-4 font-display text-base text-gray-900 shadow-sm transition duration-300 hover:bg-gray-50"
             >
               Log out
             </button>
@@ -97,11 +97,11 @@ export default function AdminLogin() {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isButtonDisabled}
-            className="group flex w-full items-center justify-center gap-3 rounded-full border border-white/15 bg-luxuryBg px-6 py-4 font-display text-base text-white shadow-lg shadow-black/25 transition duration-300 hover:border-white/30 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-70"
+            className="group flex w-full items-center justify-center gap-3 rounded-full border border-gray-200 bg-white px-6 py-4 font-display text-base text-gray-900 shadow-sm transition duration-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isRedirecting ? (
               <>
-                <span className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                <span className="h-5 w-5 rounded-full border-2 border-gray-300 border-t-gray-900 animate-spin" />
                 Redirecting...
               </>
             ) : (
