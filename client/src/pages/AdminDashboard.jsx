@@ -1,29 +1,13 @@
 // client/src/pages/AdminDashboard.jsx
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { SignOutButton, useAuth, useUser } from "@clerk/clerk-react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { SignOutButton } from "@clerk/clerk-react";
+import { getAuthToken } from "../utils/authToken.js";
 
-const API_BASE = "https://interior-portfolio-production-4108.up.railway.app/api";
-
-function LoadingSpinner() {
-  return (
-    <div className="min-h-screen bg-luxuryBg flex items-center justify-center">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-luxuryGold border-solid"></div>
-    </div>
-  );
-}
+const API_BASE = import.meta.env.VITE_API_BASE_URL
+  ? `${import.meta.env.VITE_API_BASE_URL}/api`
+  : "https://interior-portfolio-production-4108.up.railway.app/api";
 
 export default function AdminDashboard() {
-  const navigate = useNavigate();
-  const { getToken } = useAuth();
-  const { isLoaded, isSignedIn, user } = useUser();
-  const allowedEmails = useMemo(
-    () => (import.meta.env.VITE_ADMIN_EMAILS || "").split(",").map(e => e.trim()),
-    []
-  );
-  const userEmail = user?.primaryEmailAddress?.emailAddress;
-
-  // ✅ ALL HOOKS FIRST - BEFORE ANY CONDITIONS
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
   const [categories, setCategories] = useState([]);
@@ -91,7 +75,7 @@ export default function AdminDashboard() {
   }, [toUrl]);
 
   const adminFetch = useCallback(async (url, options = {}) => {
-    const token = await getToken();
+    const token = await getAuthToken();
     return fetch(url, {
       ...options,
       headers: {
@@ -99,36 +83,12 @@ export default function AdminDashboard() {
         Authorization: `Bearer ${token}`,
       },
     });
-  }, [getToken]);
+  }, []);
 
-  // ✅ useEffect hook
   useEffect(() => {
-    if (!isLoaded || !isSignedIn || !allowedEmails.includes(userEmail)) return;
     fetchCategories();
     fetchProjects();
-  }, [allowedEmails, fetchCategories, fetchProjects, isLoaded, isSignedIn, userEmail]);
-
-  if (!isLoaded) return <LoadingSpinner />;
-  if (!isSignedIn) {
-    navigate('/admin');
-    return null;
-  }
-
-  if (!allowedEmails.includes(userEmail)) {
-    return (
-      <div className="min-h-screen bg-luxuryBg flex items-center justify-center">
-        <div className="text-center p-8 rounded-2xl border border-white/10 bg-white/5">
-          <p className="text-white text-lg mb-4">Access Denied</p>
-          <p className="text-luxuryMuted text-sm">{userEmail} is not authorized.</p>
-          <SignOutButton>
-            <button className="mt-6 px-6 py-2 rounded-full border border-luxuryLine text-luxuryMuted text-sm hover:text-white transition">
-              Sign out
-            </button>
-          </SignOutButton>
-        </div>
-      </div>
-    );
-  }
+  }, [fetchCategories, fetchProjects]);
 
   // Category handlers
   const handleCategorySubmit = async (e) => {
@@ -316,6 +276,11 @@ export default function AdminDashboard() {
         <button onClick={() => setActiveTab("home")} className={`py-2 px-4 rounded-lg ${activeTab==="home" ? "bg-luxuryGold text-black" : ""}`}>Home</button>
         <button onClick={() => setActiveTab("categories")} className={`py-2 px-4 rounded-lg ${activeTab==="categories" ? "bg-luxuryGold text-black" : ""}`}>Categories</button>
         <button onClick={() => setActiveTab("projects")} className={`py-2 px-4 rounded-lg ${activeTab==="projects" ? "bg-luxuryGold text-black" : ""}`}>Projects</button>
+        <SignOutButton>
+          <button className="mt-auto py-2 px-4 rounded-lg border border-luxuryLine text-luxuryMuted hover:text-white transition">
+            Sign out
+          </button>
+        </SignOutButton>
       </aside>
 
       <main className="flex-1 p-8 overflow-auto text-luxuryInk">

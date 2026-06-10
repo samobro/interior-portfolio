@@ -5,6 +5,7 @@ module.exports.cache = cache;
 
 const express = require("express");
 const cors = require("cors");
+const { clerkMiddleware } = require("@clerk/express");
 
 const app = express();
 
@@ -56,10 +57,16 @@ app.get("/api/health", (req, res) => {
 // Routes
 const categoryRoutes = require("./routes/categoryRoutes");
 const projectRoutes = require("./routes/projectRoutes");
+const authRouter = require("./routes/auth");
 const { requireAdmin } = require("./middleware/clerkAuth");
+const { clerkProxyMiddleware, CLERK_PROXY_PATH } = require("./middleware/clerkProxyMiddleware");
+
+app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+app.use(clerkMiddleware());
 
 app.use("/api/categories", categoryRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api", authRouter);
 app.use("/api/admin/categories", requireAdmin, categoryRoutes);
 app.use("/api/admin/projects", requireAdmin, projectRoutes);
 

@@ -8,6 +8,7 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 import SSOCallback from "./pages/SSOCallback.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
+import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 
 export default function App() {
   return (
@@ -24,7 +25,7 @@ export default function App() {
           {/* Admin pages */}
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/sso-callback" element={<SSOCallback />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute component={AdminDashboard} />} />
         </Routes>
       </main>
       <Footer />
