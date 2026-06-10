@@ -1,6 +1,6 @@
 // server/middleware/cloudinaryUpload.js - OPTIMIZED VERSION
 const multer = require('multer');
-const cloudinary = require('../config/cloudinary');
+const getCloudinary = require('../config/cloudinary');
 
 // Configure multer for memory storage (not disk storage)
 const storage = multer.memoryStorage();
@@ -30,7 +30,7 @@ const uploadToCloudinary = (buffer, folder = 'interior-portfolio') => {
       reject(new Error('Cloudinary upload timeout after 30 seconds'));
     }, 30000); // 30 second timeout
 
-    cloudinary.uploader.upload_stream(
+    getCloudinary().uploader.upload_stream(
       {
         folder: folder,
         resource_type: 'image',
@@ -73,7 +73,7 @@ const deleteFromCloudinary = (publicId) => {
       reject(new Error('Cloudinary delete timeout'));
     }, 15000); // 15 second timeout for deletes
 
-    cloudinary.uploader.destroy(publicId, (error, result) => {
+    getCloudinary().uploader.destroy(publicId, (error, result) => {
       clearTimeout(deleteTimeout);
       const deleteTime = Date.now() - startTime;
       
