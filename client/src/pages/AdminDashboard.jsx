@@ -1,6 +1,7 @@
 // client/src/pages/AdminDashboard.jsx
 import { useCallback, useEffect, useState } from "react";
-import { SignOutButton } from "@clerk/clerk-react";
+import { SignOutButton, useUser } from "@clerk/clerk-react";
+import { FiFolder, FiGrid, FiImage, FiPlus, FiArrowRight } from "react-icons/fi";
 import { getAuthToken } from "../utils/authToken.js";
 import { ProgressBar } from "../components/admin/ProgressBar.jsx";
 import { ConfirmDialog } from "../components/admin/ConfirmDialog.jsx";
@@ -10,6 +11,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL
   : "https://interior-portfolio-production-4108.up.railway.app/api";
 
 export default function AdminDashboard() {
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -297,9 +299,100 @@ export default function AdminDashboard() {
 
       <main className="flex-1 p-8 overflow-auto text-gray-900">
         {activeTab === "home" && (
-          <div className="text-center mt-20">
-            <h1 className="text-4xl font-bold mb-4 text-gray-900">Welcome Admin!</h1>
-            <p className="text-lg text-gray-500">Use the buttons on the left to manage Categories and Projects.</p>
+          <div className="max-w-5xl">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">Good evening{user?.firstName ? `, ${user.firstName}` : ""}</h1>
+                <p className="text-lg text-gray-500">Here's what's going on with your portfolio.</p>
+              </div>
+              <div className="flex gap-4 mt-6 md:mt-0">
+                <button onClick={() => setActiveTab("categories")} className="flex items-center gap-2 bg-white border border-gray-200 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-50 transition">
+                  <FiPlus /> Add category
+                </button>
+                <button onClick={() => setActiveTab("projects")} className="flex items-center gap-2 bg-[#B47B3A] text-white px-4 py-2 rounded-lg hover:bg-[#a06a2f] transition">
+                  <FiPlus /> Add project
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+              <div className="bg-white border border-gray-200 rounded-xl p-6 flex items-center shadow-sm">
+                <div className="w-14 h-14 rounded-full bg-[#F0E9E0] flex items-center justify-center text-[#B47B3A] text-2xl mr-4">
+                  <FiFolder />
+                </div>
+                <div>
+                  <p className="text-gray-500 text-sm font-medium">Total projects</p>
+                  <p className="text-3xl font-bold text-gray-900">{projects.length}</p>
+                </div>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-xl p-6 flex items-center shadow-sm">
+                <div className="w-14 h-14 rounded-full bg-[#F0E9E0] flex items-center justify-center text-[#B47B3A] text-2xl mr-4">
+                  <FiGrid />
+                </div>
+                <div>
+                  <p className="text-gray-500 text-sm font-medium">Total categories</p>
+                  <p className="text-3xl font-bold text-gray-900">{categories.length}</p>
+                </div>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-xl p-6 flex items-center shadow-sm">
+                <div className="w-14 h-14 rounded-full bg-[#F0E9E0] flex items-center justify-center text-[#B47B3A] text-2xl mr-4">
+                  <FiImage />
+                </div>
+                <div>
+                  <p className="text-gray-500 text-sm font-medium">Total images</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {projects.reduce((sum, p) => sum + (p.images?.length || 0), 0)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">Recent Projects</h2>
+                <button onClick={() => setActiveTab("projects")} className="text-[#B47B3A] hover:underline flex items-center gap-1 font-medium">
+                  View all <FiArrowRight />
+                </button>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div className="divide-y divide-gray-200">
+                  {[...projects].reverse().slice(0, 3).map((p, index) => {
+                    const category = categories.find(c => c.id === p.category_id);
+                    return (
+                      <div key={p.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition">
+                        <div className="flex items-center gap-4">
+                          {firstImagePath(p) ? (
+                            <img src={firstImagePath(p)} alt={p.title} className="w-16 h-16 object-cover rounded-lg border border-gray-100" />
+                          ) : (
+                            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 border border-gray-200">
+                              <FiImage size={24} />
+                            </div>
+                          )}
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="text-lg font-semibold text-gray-900">{p.title}</h3>
+                              {index === 0 && (
+                                <span className="bg-[#F0E9E0] text-[#B47B3A] text-xs px-2 py-0.5 rounded-full font-medium">
+                                  Latest
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500">
+                              {category ? category.name : "Uncategorized"} • {p.images?.length || 0} images
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {projects.length === 0 && (
+                    <div className="p-8 text-center text-gray-500">
+                      No projects found.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
