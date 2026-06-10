@@ -54,7 +54,7 @@ export function ProtectedRoute({ component }) {
     return () => {
       cancelled = true;
     };
-  });
+  }, [isLoaded, isSignedIn]);
 
   if (status === "loading") {
     return (
