@@ -16,6 +16,8 @@ router.get("/auth/me", requireAuth, async (req, res) => {
     const { userEmail, isAdmin } = await getAdminContext(userId);
     res.json({ userId, email: userEmail, isAdmin });
   } catch (error) {
+    console.error("GET /api/auth/me failed:", error);
+
     if (error instanceof Error && error.message === "ADMIN_EMAILS is not configured") {
       res.status(500).json({ error: error.message });
       return;

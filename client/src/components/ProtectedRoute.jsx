@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { Navigate } from "react-router-dom";
 import { getAuthToken } from "../utils/authToken.js";
@@ -8,21 +8,29 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://interior-portfoli
 export function ProtectedRoute({ component }) {
   const { isSignedIn, isLoaded } = useAuth();
   const [status, setStatus] = useState("loading");
+  const hasFetched = useRef(false);
   const Component = component;
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (hasFetched.current || !isLoaded) return;
 
     if (!isSignedIn) {
+      hasFetched.current = true;
       setStatus("denied");
       return;
     }
 
+    hasFetched.current = true;
     let cancelled = false;
 
     (async () => {
       try {
         const token = await getAuthToken();
+        if (!token) {
+          if (!cancelled) setStatus("denied");
+          return;
+        }
+
         const res = await fetch(`${API_BASE}/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -46,7 +54,7 @@ export function ProtectedRoute({ component }) {
     return () => {
       cancelled = true;
     };
-  }, [isLoaded, isSignedIn]);
+  });
 
   if (status === "loading") {
     return (
