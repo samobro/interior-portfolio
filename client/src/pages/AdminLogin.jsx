@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { useSignIn } from "@clerk/clerk-react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth, useClerk, useSignIn } from "@clerk/clerk-react";
 
 const getAuthErrorMessage = (search) => {
   const params = new URLSearchParams(search);
@@ -13,12 +13,21 @@ const getAuthErrorMessage = (search) => {
 };
 
 export default function AdminLogin() {
+  const navigate = useNavigate();
   const { signIn, isLoaded } = useSignIn();
+  const { isSignedIn } = useAuth();
+  const { signOut } = useClerk();
   const location = useLocation();
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [errorMessage, setErrorMessage] = useState(
     location.state?.authError || getAuthErrorMessage(location.search),
   );
+
+  useEffect(() => {
+    if (isSignedIn) {
+      navigate("/admin/dashboard", { replace: true });
+    }
+  }, [isSignedIn, navigate]);
 
   const handleGoogleSignIn = async () => {
     if (!isLoaded || !signIn || isRedirecting) {
@@ -43,6 +52,29 @@ export default function AdminLogin() {
 
   const isButtonDisabled = !isLoaded || isRedirecting;
 
+  if (isSignedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-luxuryBg px-4">
+        <div className="max-w-md w-full">
+          <div className="rounded-2xl p-8 bg-luxurySurface border border-white/10 shadow-2xl shadow-black/30 text-center">
+            <p className="font-display text-sm uppercase tracking-[0.35em] text-luxuryMuted mb-3">
+              Secure Access
+            </p>
+            <h1 className="font-display text-3xl text-white mb-2">Redirecting</h1>
+            <p className="text-luxuryMuted mb-6">Taking you to the admin dashboard.</p>
+            <button
+              type="button"
+              onClick={() => signOut()}
+              className="w-full rounded-full border border-white/15 bg-luxuryBg px-6 py-4 font-display text-base text-white shadow-lg shadow-black/25 transition duration-300 hover:border-white/30 hover:bg-white/10"
+            >
+              Log out
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-luxuryBg px-4">
       <div className="max-w-md w-full">
@@ -56,7 +88,7 @@ export default function AdminLogin() {
           </div>
 
           {errorMessage && (
-            <div className="mb-6 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+            <div className="mb-6 rounded-xl border border-red-500/50 bg-red-950/60 px-4 py-3 text-sm text-red-400">
               {errorMessage}
             </div>
           )}
