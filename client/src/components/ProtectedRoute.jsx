@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useClerk } from "@clerk/clerk-react";
 import { Navigate } from "react-router-dom";
 import { getAuthToken } from "../utils/authToken.js";
 
@@ -7,6 +7,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://interior-portfoli
 
 export function ProtectedRoute({ component }) {
   const { isSignedIn, isLoaded } = useAuth();
+  const { signOut } = useClerk();
   const [status, setStatus] = useState("loading");
   const hasFetched = useRef(false);
   const Component = component;
@@ -73,9 +74,15 @@ export function ProtectedRoute({ component }) {
             Restricted Area
           </p>
           <h1 className="font-display text-3xl text-white mb-2">Access Denied</h1>
-          <p className="text-luxuryMuted">
+          <p className="text-luxuryMuted mb-8">
             Your account is signed in, but it does not have admin access.
           </p>
+          <button
+            onClick={() => signOut()}
+            className="text-xs tracking-widest uppercase px-6 py-2.5 rounded border border-white/20 text-luxuryMuted hover:border-luxuryGold hover:text-white transition-colors"
+          >
+            Sign out
+          </button>
         </div>
       </div>
     );
