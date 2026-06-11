@@ -14,6 +14,7 @@ export default function ScrollHero() {
   const currentProgressRef = useRef(0);
   const rafIdRef = useRef(null);
   const isRunningRef = useRef(false); // ← الإضافة الوحيدة
+  const sectionRef = useRef(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -71,7 +72,7 @@ export default function ScrollHero() {
     };
 
     const handleScroll = () => {
-      const sectionScrollable = Math.max(window.innerHeight * 4, 1);
+      const sectionScrollable = Math.max((sectionRef.current?.offsetHeight ?? window.innerHeight * 4) - window.innerHeight, 1);
       targetProgressRef.current = clamp(window.scrollY / sectionScrollable);
       // شغّل اللووب بس لو مو شغّال
       if (!isRunningRef.current) {
@@ -109,7 +110,7 @@ export default function ScrollHero() {
   }, []);
 
   return (
-    <section className="relative h-[300vh] sm:h-[500vh] w-full bg-luxuryBg">
+    <section ref={sectionRef} className="relative h-[300vh] sm:h-[500vh] w-full bg-luxuryBg">
       <div className="sticky top-0 h-screen w-screen overflow-hidden">
         <div className="absolute inset-0 bg-[#ddd2c3]" />
         {!heroReady && (
