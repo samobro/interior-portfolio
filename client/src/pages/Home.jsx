@@ -194,7 +194,7 @@ export default function Home() {
                 )}
 
                 <img
-                  src={`${import.meta.env.BASE_URL}about-me.jpg`}
+                  src={`${import.meta.env.BASE_URL}hero-bg.png`}
                   alt="Interior designer portrait"
                   className={`mx-auto h-full min-h-[360px] w-full rounded-[1.5rem] object-cover transition-opacity duration-700 ${
                     aboutImageLoaded ? "opacity-100" : "opacity-0"
