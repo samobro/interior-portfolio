@@ -15,8 +15,12 @@ export default function ScrollHero() {
   const rafIdRef = useRef(null);
   const isRunningRef = useRef(false); // ← الإضافة الوحيدة
   const sectionRef = useRef(null);
+  const [videoSrc, setVideoSrc] = useState("");
 
   useEffect(() => {
+    const isMobile = window.innerWidth < 640;
+    setVideoSrc(isMobile ? `${import.meta.env.BASE_URL}frames/hero-mobile.mp4` : `${import.meta.env.BASE_URL}frames/hero.mp4`);
+
     const video = videoRef.current;
 
     const seekVideo = (progress) => {
@@ -118,7 +122,7 @@ export default function ScrollHero() {
         )}
         <video
           ref={videoRef}
-          src={`${import.meta.env.BASE_URL}frames/hero.mp4`}
+          src={videoSrc}
           muted
           playsInline
           preload="auto"
