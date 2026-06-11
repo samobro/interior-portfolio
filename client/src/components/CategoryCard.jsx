@@ -24,7 +24,7 @@ const CategoryCard = ({ item }) => {
     <Link
       to={`/category/${item.id}`}
       ref={ref}
-      className={`group relative min-w-[280px] flex-shrink-0 overflow-hidden rounded-[1.75rem] border border-luxuryLine bg-white/80 shadow-[0_18px_60px_rgba(121,99,77,0.08)] transition duration-700 ease-out sm:min-w-[340px] lg:min-w-[380px]
+      className={`group relative min-w-[85vw] flex-shrink-0 overflow-hidden rounded-[1.75rem] border border-luxuryLine bg-white/80 shadow-[0_18px_60px_rgba(121,99,77,0.08)] transition duration-700 ease-out sm:min-w-[340px] lg:min-w-[380px]
         ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
         hover:-translate-y-2 hover:shadow-[0_24px_70px_rgba(121,99,77,0.14)]`}
     >

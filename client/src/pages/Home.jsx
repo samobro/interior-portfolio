@@ -9,7 +9,7 @@ const CATEGORY_SKELETONS = Array.from({ length: 3 }, (_, index) => index);
 function CategoryCardSkeleton() {
   return (
     <div
-      className="relative min-w-[280px] flex-shrink-0 overflow-hidden rounded-[1.75rem] border border-luxuryLine bg-white/70 shadow-[0_18px_60px_rgba(121,99,77,0.08)] sm:min-w-[340px] lg:min-w-[380px]"
+      className="relative min-w-[85vw] flex-shrink-0 overflow-hidden rounded-[1.75rem] border border-luxuryLine bg-white/70 shadow-[0_18px_60px_rgba(121,99,77,0.08)] sm:min-w-[340px] lg:min-w-[380px]"
       aria-hidden="true"
     >
       <div className="aspect-[4/3] animate-pulse bg-[linear-gradient(110deg,_rgba(232,221,208,0.7)_8%,_rgba(255,255,255,0.9)_18%,_rgba(232,221,208,0.72)_33%)] bg-[length:200%_100%]" />
