@@ -17,6 +17,10 @@ export default function ProjectDetail() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  // Swipe state
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
   useEffect(() => {
     (async () => {
       try {
@@ -84,6 +88,24 @@ export default function ProjectDetail() {
     setCurrentImageIndex((prev) => 
       prev === 0 ? project.images.length - 1 : prev - 1
     );
+  };
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) goToNext();
+    if (isRightSwipe) goToPrevious();
   };
 
   if (loading) {
@@ -274,14 +296,19 @@ export default function ProjectDetail() {
             </button>
           )}
 
-          {/* Main image — pointer-events-none so clicks pass through to overlay */}
+          {/* Main image container — handles swipes and click outside */}
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center pt-16 pointer-events-none"
+            className="fixed inset-0 z-50 flex items-center justify-center pt-16"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onClick={closeLightbox}
           >
             <img
               src={optimizeImageUrl(project.images[currentImageIndex].path)}
               alt={`${project.title}-${currentImageIndex + 1}`}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain cursor-default"
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
 
